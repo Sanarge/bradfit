@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BradFit">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>BradFit</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #000000;
+    --surface: #111114;
+    --surface-hover: #1a1a1f;
+    --surface-active: #222228;
+    --border: #2a2a32;
+    --text: #ffffff;
+    --text-secondary: #8a8a9a;
+    --text-muted: #55556a;
+    --neon-blue: #00d4ff;
+    --neon-green: #00ff88;
+    --neon-blue-glow: rgba(0, 212, 255, 0.3);
+    --neon-green-glow: rgba(0, 255, 136, 0.3);
+    --neon-blue-dim: rgba(0, 212, 255, 0.12);
+    --neon-green-dim: rgba(0, 255, 136, 0.12);
+    --danger: #ff4466;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --safe-top: env(safe-area-inset-top, 20px);
+    --safe-bottom: env(safe-area-inset-bottom, 20px);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  /* ââ Screens ââ */
+  .screen {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    animation: fadeSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ââ Home Screen ââ */
+  .home {
+    justify-content: center;
+    align-items: center;
+    padding: 32px 28px;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .home-logo {
+    width: 72px; height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 0 40px var(--neon-blue-glow), 0 0 80px rgba(0,212,255,0.1);
+  }
+  .home-logo svg { width: 38px; height: 38px; }
+
+  .home h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+  }
+  .home h1 span {
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .home p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 300px;
+    margin-top: 4px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    margin-bottom: 12px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    text-align: center;
+    flex: 1;
+  }
+  .stat-card .stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-card .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 3px;
+  }
+
+  /* ââ Buttons ââ */
+  .btn-primary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 40px;
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #000;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 24px var(--neon-blue-glow), 0 0 60px rgba(0,212,255,0.08);
+  }
+  .btn-primary:active {
+    transform: scale(0.96);
+    box-shadow: 0 0 12px var(--neon-blue-glow);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:active { background: var(--surface-hover); }
+
+  /* ââ Day Select Screen ââ */
+  .day-select {
+    padding: 28px 20px;
+  }
+  .day-select-header {
+    padding: 0 4px;
+    margin-bottom: 24px;
+  }
+  .day-select-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .day-select-header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  .day-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    flex: 1;
+    padding-bottom: 20px;
+  }
+
+  .day-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .day-card:active { background: var(--surface-hover); transform: scale(0.985); }
+  .day-card.rest { opacity: 0.5; }
+
+  .day-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .day-icon.push { background: var(--neon-blue-dim); color: var(--neon-blue); }
+  .day-icon.pull { background: var(--neon-green-dim); color: var(--neon-green); }
+  .day-icon.legs { background: rgba(168,85,247,0.12); color: #a855f7; }
+  .day-icon.rest-icon { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+
+  .day-info { flex: 1; }
+  .day-info .day-name {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .day-info .day-type {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .day-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .day-progress-bar {
+    width: 40px; height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .day-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .day-progress-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    min-width: 30px;
+    text-align: right;
+  }
+
+  .day-chevron {
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* ââ Workout Screen ââ */
+  .workout {
+    padding: 0;
+  }
+
+  .workout-top-bar {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px 12px;
+    gap: 12px;
+  }
+  .back-btn {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .back-btn:active { background: var(--surface-hover); transform: scale(0.92); }
+
+  .workout-title-area { flex: 1; }
+  .workout-title-area h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .workout-title-area .workout-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .workout-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 20px 32px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .timer-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--neon-blue-dim);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+  }
+  .timer-banner svg { color: var(--neon-blue); flex-shrink: 0; }
+  .timer-banner span {
+    font-size: 14px;
+    color: var(--neon-blue);
+    font-weight: 500;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-left: 2px;
+  }
+
+  /* ââ Exercise Cards ââ */
+  .exercise-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .exercise-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .exercise-card.checked {
+    border-color: rgba(0,255,136,0.2);
+    background: rgba(0,255,136,0.04);
+  }
+
+  .exercise-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    cursor: pointer;
+  }
+
+  .exercise-check {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .exercise-card.checked .exercise-check {
+    background: var(--neon-green);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 12px var(--neon-green-glow);
+  }
+  .exercise-check svg {
+    width: 14px; height: 14px;
+    color: #000;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .exercise-card.checked .exercise-check svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .exercise-info { flex: 1; min-width: 0; }
+  .exercise-name {
+    font-size: 15px;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .exercise-card.checked .exercise-name {
+    color: var(--neon-green);
+  }
+  .exercise-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+  }
+  .exercise-card.checked .exercise-meta {
+    color: rgba(0,255,136,0.5);
+  }
+
+  .exercise-hold-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* ââ Exercise Detail Panel ââ */
+  .exercise-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .exercise-card.expanded .exercise-detail {
+    max-height: 400px;
+  }
+
+  .exercise-detail-inner {
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+    padding-top: 14px;
+  }
+
+  .detail-section { margin-bottom: 12px; }
+  .detail-section:last-child { margin-bottom: 0; }
+  .detail-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+  .detail-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .stick-figure {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0 4px;
+  }
+  .stick-figure svg {
+    width: 80px;
+    height: 80px;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  /* ââ Completion ââ */
+  .completion-banner {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 32px 20px;
+    margin-top: 16px;
+    animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .completion-banner.show { display: flex; }
+
+  .completion-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 0 32px var(--neon-green-glow);
+    animation: pulseGlow 2s infinite;
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 32px var(--neon-green-glow); }
+    50% { box-shadow: 0 0 48px var(--neon-green-glow), 0 0 80px rgba(0,255,136,0.1); }
+  }
+  .completion-icon svg { width: 30px; height: 30px; color: #000; }
+  .completion-banner h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .completion-banner p {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  /* ââ Rest Day Screen ââ */
+  .rest-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    flex: 1;
+  }
+  .rest-screen .rest-emoji {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  .rest-screen h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .rest-screen p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 260px;
+  }
+
+  /* ââ Bottom Nav ââ */
+  .bottom-nav {
+    display: flex;
+    gap: 4px;
+    padding: 8px 16px 4px;
+    justify-content: center;
+  }
+  .bottom-nav .nav-day {
+    flex: 1;
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .bottom-nav .nav-day.active {
+    color: var(--neon-blue);
+    background: var(--neon-blue-dim);
+  }
+  .bottom-nav .nav-day.completed-day {
+    color: var(--neon-green);
+  }
+  .bottom-nav .nav-day:active { transform: scale(0.92); }
+
+  /* ââ Scrollbar ââ */
+  ::-webkit-scrollbar { width: 0; }
+
+  /* ââ Utility ââ */
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip: rect(0,0,0,0);
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- âââ HOME SCREEN âââ -->
+  <div id="screen-home" class="screen home active">
+    <div class="home-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6.5 6.5h11M6.5 17.5h11M3 12h3.5M17.5 12H21M6.5 6.5v11M17.5 6.5v11" stroke="#000"/>
+      </svg>
+    </div>
+    <h1>Hi <span>Brad</span>,<br>ready to start your workout?</h1>
+    <p>15 min strength + 45 min cardio. Let's build that half marathon base.</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val" id="stat-completed">0</div>
+        <div class="stat-label">Done This Week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-streak">0</div>
+        <div class="stat-label">Day Streak</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="showScreen('screen-days')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Start Workout
+    </button>
+  </div>
+
+  <!-- âââ DAY SELECT SCREEN âââ -->
+  <div id="screen-days" class="screen day-select">
+    <div class="day-select-header">
+      <h2>Choose Your Day</h2>
+      <p>Push / Pull / Legs split â 15 min strength blocks</p>
+    </div>
+    <div class="day-grid" id="day-grid"></div>
+    <div style="padding: 12px 0; text-align:center;">
+      <button class="btn-secondary" onclick="showScreen('screen-home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+    </div>
+  </div>
+
+  <!-- âââ WORKOUT SCREEN âââ -->
+  <div id="screen-workout" class="screen workout">
+    <div class="workout-top-bar">
+      <button class="back-btn" onclick="showScreen('screen-days')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="workout-title-area">
+        <h2 id="workout-day-title">Monday</h2>
+        <div class="workout-subtitle" id="workout-type-label">Push Day</div>
+      </div>
+    </div>
+
+    <div class="workout-content" id="workout-content">
+      <!-- dynamic -->
+    </div>
+
+    <div class="bottom-nav" id="bottom-nav"></div>
+  </div>
+
+</div>
+
+<script>
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+//  WORKOUT DATA
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+const DAYS = [
+  {
+    day: 'Monday', type: 'Push', icon: 'push',
+    exercises: [
+      {
+        name: 'Barbell Bench Press',
+        meta: '3 sets Ã 8 reps',
+        desc: 'Lie flat on the bench, grip the bar slightly wider than shoulder-width. Lower to your chest, pause briefly, then press up. Keep your feet flat and back slightly arched.',
+        figure: 'bench'
+      },
+      {
+        name: 'Dumbbell Shoulder Press',
+        meta: '3 sets Ã 10 reps',
+        desc: 'Sit or stand with dumbbells at shoulder height, palms facing forward. Press straight up until arms are extended, then lower with control. Keep your core tight.',
+        figure: 'press'
+      },
+      {
+        name: 'Cable Tricep Pushdown',
+        meta: '3 sets Ã 12 reps',
+        desc: 'Stand facing the cable machine, grip the rope or bar attachment. Keep elbows pinned to your sides and extend your arms down fully. Squeeze at the bottom, return slowly.',
+        figure: 'pushdown'
+      }
+    ]
+  },
+  {
+    day: 'Tuesday', type: 'Pull', icon: 'pull',
+    exercises: [
+      {
+        name: 'Barbell Bent-Over Row',
+        meta: '3 sets Ã 8 reps',
+        desc: 'Hinge at your hips holding the barbell, back flat at roughly 45Â°. Pull the bar to your lower chest, squeezing your shoulder blades together. Lower with control.',
+        figure: 'row'
+      },
+      {
+        name: 'Dumbbell Bicep Curl',
+        meta: '3 sets Ã 12 reps',
+        desc: 'Stand with dumbbells at your sides, palms forward. Curl the weights up without swinging your body. Squeeze at the top, lower slowly for a full stretch.',
+        figure: 'curl'
+      },
+      {
+        name: 'Cable Face Pull',
+        meta: '3 sets Ã 15 reps',
+        desc: 'Set the cable at upper chest height with a rope attachment. Pull toward your face, elbows high and wide. Focus on squeezing your rear delts and upper back.',
+        figure: 'facepull'
+      }
+    ]
+  },
+  {
+    day: 'Wednesday', type: 'Legs', icon: 'legs',
+    exercises: [
+      {
+        name: 'Barbell Squat',
+        meta: '3 sets Ã 8 reps',
+        desc: 'Bar across your upper traps, feet shoulder-width apart. Sit back and down until thighs are parallel. Drive through your heels to stand. Keep your chest up and core braced.',
+        figure: 'squat'
+      },
+      {
+        name: 'Dumbbell Romanian Deadlift',
+        meta: '3 sets Ã 10 reps',
+        desc: 'Hold dumbbells in front of your thighs. Hinge at the hips, pushing them back while lowering the weights along your legs. Feel the stretch in your hamstrings, then drive hips forward to stand.',
+        figure: 'rdl'
+      },
+      {
+        name: 'Dumbbell Walking Lunge',
+        meta: '3 sets Ã 10 each leg',
+        desc: 'Hold dumbbells at your sides. Step forward into a lunge, lowering your back knee toward the ground. Push off the front foot to step into the next lunge. Keep your torso upright.',
+        figure: 'lunge'
+      }
+    ]
+  },
+  {
+    day: 'Thursday', type: 'Rest', icon: 'rest-icon',
+    exercises: []
+  },
+  {
+    day: 'Friday', type: 'Push', icon: 'push',
+    exercises: [
+      {
+        name: 'Dumbbell Incline Press',
+        meta: '3 sets Ã 10 reps',
+        desc: 'Set the bench to about 30Â°. Press dumbbells up from chest level until arms are extended. Focus on the upper chest. Lower with a controlled tempo.',
+        figure: 'bench'
+      },
+      {
+        name: 'Lateral Raise',
+        meta: '3 sets Ã 12 reps',
+        desc: 'Stand with light dumbbells at your sides. Raise arms out to the sides until parallel with the floor, slight bend in elbows. Lower slowly. Don't use momentum.',
+        figure: 'press'
+      },
+      {
+        name: 'Overhead Tricep Extension',
+        meta: '3 sets Ã 12 reps',
+        desc: 'Hold one dumbbell with both hands behind your head. Extend arms overhead, keeping elbows close to your ears. Lower back behind your head with control.',
+        figure: 'pushdown'
+      },
+      {
+        name: 'Push-Ups to Failure',
+        meta: '1 set Ã max reps',
+        desc: 'Hands slightly wider than shoulder-width, body in a straight line. Lower your chest to the floor, push back up. Go until you can't maintain good form. Great finisher.',
+        figure: 'bench'
+      }
+    ]
+  }
+];
+
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+//  STICK FIGURE SVGs
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+const FIGURES = {
+  bench: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="15" y1="55" x2="65" y2="55"/><circle cx="40" cy="28" r="5"/><line x1="40" y1="33" x2="40" y2="50"/><line x1="28" y1="38" x2="52" y2="38"/><line x1="28" y1="36" x2="28" y2="40"/><line x1="52" y1="36" x2="52" y2="40"/><line x1="34" y1="50" x2="28" y2="58"/><line x1="46" y1="50" x2="52" y2="58"/></svg>`,
+  press: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="40" cy="20" r="5"/><line x1="40" y1="25" x2="40" y2="50"/><line x1="30" y1="12" x2="40" y2="30"/><line x1="50" y1="12" x2="40" y2="30"/><line x1="28" y1="10" x2="32" y2="14"/><line x1="48" y1="14" x2="52" y2="10"/><line x1="34" y1="50" x2="28" y2="65"/><line x1="46" y1="50" x2="52" y2="65"/></svg>`,
+  pushdown: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="40" cy="18" r="5"/><line x1="40" y1="23" x2="40" y2="48"/><line x1="40" y1="30" x2="32" y2="46"/><line x1="40" y1="30" x2="48" y2="46"/><line x1="34" y1="48" x2="28" y2="65"/><line x1="46" y1="48" x2="52" y2="65"/><line x1="20" y1="10" x2="20" y2="50"/><line x1="20" y1="30" x2="32" y2="30"/></svg>`,
+  row: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="35" cy="22" r="5"/><line x1="35" y1="27" x2="42" y2="48"/><line x1="42" y1="35" x2="30" y2="42"/><line x1="42" y1="35" x2="50" y2="30"/><line x1="42" y1="48" x2="34" y2="65"/><line x1="42" y1="48" x2="52" y2="62"/><line x1="22" y1="45" x2="58" y2="45"/></svg>`,
+  curl: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="40" cy="18" r="5"/><line x1="40" y1="23" x2="40" y2="48"/><line x1="40" y1="30" x2="32" y2="38"/><line x1="32" y1="38" x2="34" y2="28"/><line x1="40" y1="30" x2="48" y2="38"/><line x1="48" y1="38" x2="46" y2="28"/><line x1="34" y1="48" x2="28" y2="65"/><line x1="46" y1="48" x2="52" y2="65"/></svg>`,
+  facepull: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="40" cy="20" r="5"/><line x1="40" y1="25" x2="40" y2="50"/><line x1="40" y1="32" x2="28" y2="26"/><line x1="40" y1="32" x2="52" y2="26"/><line x1="34" y1="50" x2="28" y2="65"/><line x1="46" y1="50" x2="52" y2="65"/><line x1="20" y1="10" x2="20" y2="50"/><line x1="20" y1="26" x2="28" y2="26"/><line x1="20" y1="26" x2="52" y2="26"/></svg>`,
+  squat: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="40" cy="16" r="5"/><line x1="40" y1="21" x2="40" y2="42"/><line x1="28" y1="14" x2="52" y2="14"/><line x1="40" y1="42" x2="30" y2="54"/><line x1="30" y1="54" x2="28" y2="66"/><line x1="40" y1="42" x2="50" y2="54"/><line x1="50" y1="54" x2="52" y2="66"/><line x1="40" y1="30" x2="30" y2="36"/><line x1="40" y1="30" x2="50" y2="36"/></svg>`,
+  rdl: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="32" cy="24" r="5"/><line x1="32" y1="29" x2="42" y2="46"/><line x1="32" y1="36" x2="24" y2="48"/><line x1="32" y1="36" x2="22" y2="32"/><line x1="42" y1="46" x2="36" y2="65"/><line x1="42" y1="46" x2="50" y2="64"/><line x1="20" y1="50" x2="26" y2="50"/></svg>`,
+  lunge: `<svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="40" cy="16" r="5"/><line x1="40" y1="21" x2="40" y2="44"/><line x1="40" y1="28" x2="32" y2="38"/><line x1="40" y1="28" x2="48" y2="38"/><line x1="40" y1="44" x2="28" y2="58"/><line x1="28" y1="58" x2="24" y2="66"/><line x1="40" y1="44" x2="52" y2="56"/><line x1="52" y1="56" x2="56" y2="66"/></svg>`
+};
+
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+//  STATE MANAGEMENT (localStorage)
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+const STORAGE_KEY = 'bradfit_progress';
+
+function loadProgress() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch { return {}; }
+}
+function saveProgress(progress) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+}
+function getDayProgress(dayIndex) {
+  const p = loadProgress();
+  return p[dayIndex] || {};
+}
+function setExerciseChecked(dayIndex, exIndex, checked) {
+  const p = loadProgress();
+  if (!p[dayIndex]) p[dayIndex] = {};
+  p[dayIndex][exIndex] = checked;
+  saveProgress(p);
+}
+function isDayComplete(dayIndex) {
+  const day = DAYS[dayIndex];
+  if (day.type === 'Rest') return false;
+  const p = getDayProgress(dayIndex);
+  return day.exercises.every((_, i) => p[i] === true);
+}
+function dayCompletionCount(dayIndex) {
+  const p = getDayProgress(dayIndex);
+  return Object.values(p).filter(v => v === true).length;
+}
+
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+//  SCREEN MANAGEMENT
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const screen = document.getElementById(id);
+  screen.classList.add('active');
+  // force re-trigger animation
+  screen.style.animation = 'none';
+  screen.offsetHeight;
+  screen.style.animation = '';
+
+  if (id === 'screen-home') updateHomeStats();
+  if (id === 'screen-days') renderDayGrid();
+}
+
+function updateHomeStats() {
+  let completed = 0;
+  DAYS.forEach((d, i) => { if (d.type !== 'Rest' && isDayComplete(i)) completed++; });
+  document.getElementById('stat-completed').textContent = completed;
+
+  // simple streak: count consecutive completed days from Monday
+  let streak = 0;
+  for (let i = 0; i < DAYS.length; i++) {
+    if (DAYS[i].type === 'Rest') { streak++; continue; }
+    if (isDayComplete(i)) streak++;
+    else break;
+  }
+  document.getElementById('stat-streak').textContent = streak;
+}
+
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+//  DAY GRID
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+function renderDayGrid() {
+  const grid = document.getElementById('day-grid');
+  grid.innerHTML = '';
+  DAYS.forEach((d, i) => {
+    const total = d.exercises.length;
+    const done = dayCompletionCount(i);
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    const complete = total > 0 && done === total;
+
+    const card = document.createElement('div');
+    card.className = 'day-card' + (d.type === 'Rest' ? ' rest' : '');
+    card.innerHTML = `
+      <div class="day-icon ${d.icon}">${d.type === 'Rest' ? 'ð´' : d.type === 'Push' ? 'ðª' : d.type === 'Pull' ? 'ðï¸' : 'ð¦µ'}</div>
+      <div class="day-info">
+        <div class="day-name">${d.day}</div>
+        <div class="day-type">${d.type}${d.type !== 'Rest' ? ' Day' : ' Day â recover & stretch'}</div>
+      </div>
+      ${d.type !== 'Rest' ? `
+      <div class="day-progress">
+        <div class="day-progress-bar"><div class="day-progress-fill" style="width:${pct}%"></div></div>
+        <div class="day-progress-text">${complete ? 'â' : done + '/' + total}</div>
+      </div>` : ''}
+      <div class="day-chevron">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    `;
+    card.addEventListener('click', () => openWorkout(i));
+    grid.appendChild(card);
+  });
+}
+
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+//  WORKOUT SCREEN
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+let currentDayIndex = 0;
+
+function openWorkout(dayIndex) {
+  currentDayIndex = dayIndex;
+  renderWorkout(dayIndex);
+  showScreen('screen-workout');
+}
+
+function renderWorkout(dayIndex) {
+  const day = DAYS[dayIndex];
+  document.getElementById('workout-day-title').textContent = day.day;
+  document.getElementById('workout-type-label').textContent =
+    day.type === 'Rest' ? 'Rest Day' : day.type + ' Day';
+
+  const content = document.getElementById('workout-content');
+
+  if (day.type === 'Rest') {
+    content.innerHTML = `
+      <div class="rest-screen">
+        <div class="rest-emoji">ð§</div>
+        <h3>Rest Day</h3>
+        <p>Recovery is part of the process. Stretch, hydrate, and let your muscles rebuild. You've earned it.</p>
+      </div>`;
+    renderBottomNav(dayIndex);
+    return;
+  }
+
+  const progress = getDayProgress(dayIndex);
+  const allDone = day.exercises.every((_, i) => progress[i] === true);
+
+  let html = `
+    <div class="timer-banner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>15 min strength â then 45 min treadmill cardio</span>
+    </div>
+    <div class="section-label">Exercises</div>
+    <div class="exercise-list">
+  `;
+
+  day.exercises.forEach((ex, i) => {
+    const checked = progress[i] === true;
+    html += `
+      <div class="exercise-card${checked ? ' checked' : ''}" id="ex-${dayIndex}-${i}">
+        <div class="exercise-main" data-day="${dayIndex}" data-ex="${i}">
+          <div class="exercise-check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="exercise-info">
+            <div class="exercise-name">${ex.name}</div>
+            <div class="exercise-meta">${ex.meta}</div>
+          </div>
+          <div class="exercise-hold-hint">Hold for info</div>
+        </div>
+        <div class="exercise-detail">
+          <div class="exercise-detail-inner">
+            <div class="stick-figure">${FIGURES[ex.figure] || ''}</div>
+            <div class="detail-section">
+              <div class="detail-label">How to perform</div>
+              <div class="detail-text">${ex.desc}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  html += `<div class="completion-banner${allDone ? ' show' : ''}" id="completion-banner">
+    <div class="completion-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h3>Nice work, Brad! ð¥</h3>
+    <p>All exercises done. Now crush that cardio.</p>
+  </div>`;
+
+  content.innerHTML = html;
+
+  // Attach event listeners
+  content.querySelectorAll('.exercise-main').forEach(el => {
+    let holdTimer = null;
+    let didHold = false;
+
+    const startHold = (e) => {
+      didHold = false;
+      holdTimer = setTimeout(() => {
+        didHold = true;
+        toggleExpand(el);
+      }, 600);
+    };
+
+    const endHold = (e) => {
+      clearTimeout(holdTimer);
+      if (!didHold) {
+        toggleCheck(el);
+      }
+    };
+
+    const cancelHold = () => {
+      clearTimeout(holdTimer);
+    };
+
+    el.addEventListener('touchstart', startHold, { passive: true });
+    el.addEventListener('touchend', endHold);
+    el.addEventListener('touchmove', cancelHold, { passive: true });
+
+    // Mouse fallback
+    el.addEventListener('mousedown', startHold);
+    el.addEventListener('mouseup', endHold);
+    el.addEventListener('mouseleave', cancelHold);
+  });
+
+  renderBottomNav(dayIndex);
+}
+
+function toggleCheck(el) {
+  const dayIdx = parseInt(el.dataset.day);
+  const exIdx = parseInt(el.dataset.ex);
+  const card = document.getElementById(`ex-${dayIdx}-${exIdx}`);
+  const isChecked = card.classList.contains('checked');
+
+  if (isChecked) {
+    card.classList.remove('checked');
+    setExerciseChecked(dayIdx, exIdx, false);
+  } else {
+    card.classList.add('checked');
+    setExerciseChecked(dayIdx, exIdx, true);
+  }
+
+  // Check completion
+  const day = DAYS[dayIdx];
+  const progress = getDayProgress(dayIdx);
+  const allDone = day.exercises.every((_, i) => progress[i] === true);
+  const banner = document.getElementById('completion-banner');
+  if (banner) {
+    if (allDone) {
+      banner.classList.add('show');
+      banner.style.animation = 'none';
+      banner.offsetHeight;
+      banner.style.animation = '';
+    } else {
+      banner.classList.remove('show');
+    }
+  }
+
+  renderBottomNav(dayIdx);
+}
+
+function toggleExpand(el) {
+  const dayIdx = parseInt(el.dataset.day);
+  const exIdx = parseInt(el.dataset.ex);
+  const card = document.getElementById(`ex-${dayIdx}-${exIdx}`);
+  card.classList.toggle('expanded');
+}
+
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+//  BOTTOM NAV
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+function renderBottomNav(activeDayIndex) {
+  const nav = document.getElementById('bottom-nav');
+  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  nav.innerHTML = labels.map((label, i) => {
+    let cls = 'nav-day';
+    if (i === activeDayIndex) cls += ' active';
+    else if (DAYS[i].type !== 'Rest' && isDayComplete(i)) cls += ' completed-day';
+    return `<button class="${cls}" onclick="openWorkout(${i})">${label}</button>`;
+  }).join('');
+}
+
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+//  INIT
+// âââââââââââââââââââââââââââââââââââââââââââââââ
+updateHomeStats();
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

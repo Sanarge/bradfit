@@ -734,7 +734,7 @@ const DAYS = [
       {
         name: 'Lateral Raise',
         meta: '3 sets x 12 reps',
-        desc: 'Stand with light dumbbells at your sides. Raise arms out to the sides until parallel with the floor, slight bend in elbows. Lower slowly. Don't use momentum.',
+        desc: 'Stand with light dumbbells at your sides. Raise arms out to the sides until parallel with the floor, slight bend in elbows. Lower slowly. Do not use momentum.',
         figure: 'press'
       },
       {
@@ -746,7 +746,7 @@ const DAYS = [
       {
         name: 'Push-Ups to Failure',
         meta: '1 set x max reps',
-        desc: 'Hands slightly wider than shoulder-width, body in a straight line. Lower your chest to the floor, push back up. Go until you can't maintain good form. Great finisher.',
+        desc: 'Hands slightly wider than shoulder-width, body in a straight line. Lower your chest to the floor, push back up. Go until you cannot maintain good form. Great finisher.',
         figure: 'bench'
       }
     ]
@@ -848,7 +848,7 @@ function renderDayGrid() {
     const card = document.createElement('div');
     card.className = 'day-card' + (d.type === 'Rest' ? ' rest' : '');
     card.innerHTML = `
-      <div class="day-icon ${d.icon}">${d.type === 'Rest' ? '&#x1F634;' : d.type === 'Push' ? '&#x1F4AA;' : d.type === 'Pull' ? '&#x1F3CB;&#xFE0F;' : '&#x1F9B5;'}</div>
+      <div class="day-icon ${d.icon}">${d.type === 'Rest' ? '&#x1F634;' : d.type === 'Push' ? '&#x1F4AA;' : d.type === 'Pull' ? '&#x1F3CB;' : '&#x1F9B5;'}</div>
       <div class="day-info">
         <div class="day-name">${d.day}</div>
         <div class="day-type">${d.type}${d.type !== 'Rest' ? ' Day' : ' Day  -  recover & stretch'}</div>
@@ -909,9 +909,9 @@ function renderWorkout(dayIndex) {
     <div class="exercise-list">
   `;
 
-  day.exercises.forEach((ey, i) => {
+  day.exercises.forEach((ex, i) => {
     const checked = progress[i] === true;
-    html += ``
+    html += `
       <div class="exercise-card${checked ? ' checked' : ''}" id="ex-${dayIndex}-${i}">
         <div class="exercise-main" data-day="${dayIndex}" data-ex="${i}">
           <div class="exercise-check">
